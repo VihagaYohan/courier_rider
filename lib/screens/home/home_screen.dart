@@ -32,16 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
             trackCard(context),
             recentDelivery(context),
             const SizedBox(height: Constants.mediumSpace),
-            UITextView(
-              text: "Our Services",
-              textAlign: TextAlign.left,
-              textStyle: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: Constants.mediumSpace),
-            servicesItem(context)
           ],
         ));
   }
@@ -216,141 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 10),
-
-              // recent location
-              location(context)
             ],
           ),
         )
       ],
-    );
-  }
-
-  // source and destination
-  Widget location(BuildContext context) {
-    Brightness brightness = MediaQuery.of(context).platformBrightness;
-    Color dividerColor =
-        brightness == Brightness.dark ? AppColors.white : AppColors.darkGrey;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        recentItemLocationRow(
-            context, Icons.location_city, "From", "GenexT, Colombo"),
-        SizedBox(
-          height: 50,
-          child: VerticalDivider(
-            thickness: 1.2,
-            width: 10,
-            color: dividerColor,
-          ),
-        ),
-        recentItemLocationRow(
-            context, Icons.location_pin, "To", "1A, Waragoda Rd, Kelaniya")
-      ],
-    );
-  }
-
-  // recent item row
-  Widget recentItemLocationRow(
-      BuildContext context, IconData icon, String title, String subTitle) {
-    return Row(
-      children: <Widget>[
-        Container(
-            width: 10,
-            height: 10,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: AppColors.primary)),
-        const SizedBox(width: Constants.mediumSpace),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            UITextView(
-              text: title,
-              textStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(fontSize: 14, fontWeight: FontWeight.w300),
-            ),
-            UITextView(
-              text: subTitle,
-              textStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(fontSize: 15, fontWeight: FontWeight.w500),
-            )
-          ],
-        )
-      ],
-    );
-  }
-
-  // services
-  Widget servicesItem(BuildContext context) {
-    double width = DeviceUtils.getScreenWidth(context) -
-        40; // 40 is the default value for left and right padding in UIContainer widget
-    double boxWidth = (width - 20) / 2;
-
-    return Container(
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              // navigate to create order screen
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const CreateOrderScreen()));
-            },
-            child: Container(
-              width: boxWidth,
-              padding:
-                  const EdgeInsets.symmetric(vertical: Constants.mediumSpace),
-              decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(Constants.smallSpace)),
-              child: const Center(
-                child: Column(
-                  children: [
-                    UIIcon(
-                      iconData: Icons.local_shipping,
-                      iconColor: AppColors.primary,
-                    ),
-                    SizedBox(
-                      height: Constants.mediumSpace,
-                    ),
-                    UITextView(text: "Courier")
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Container(
-            width: boxWidth,
-            padding:
-                const EdgeInsets.symmetric(vertical: Constants.mediumSpace),
-            decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(Constants.smallSpace)),
-            child: const Center(
-              child: Column(
-                children: [
-                  UIIcon(
-                    iconData: Icons.location_on,
-                    iconColor: AppColors.primary,
-                  ),
-                  SizedBox(
-                    height: Constants.mediumSpace,
-                  ),
-                  UITextView(text: "Tracking")
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
     );
   }
 }

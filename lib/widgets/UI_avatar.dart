@@ -12,8 +12,16 @@ import 'package:courier_rider/provider/providers.dart';
 
 class UIAvatar extends StatefulWidget {
   final String name;
+  final double? width;
+  final double? height;
+  final double? fontSize;
 
-  const UIAvatar({super.key, required this.name});
+  const UIAvatar(
+      {super.key,
+      required this.name,
+      this.width = 60,
+      this.height = 60,
+      this.fontSize = 20});
 
   @override
   State<UIAvatar> createState() => _UIAvatarState();
@@ -38,8 +46,8 @@ class _UIAvatarState extends State<UIAvatar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 60,
-      height: 60,
+      width: widget.width,
+      height: widget.height,
       decoration: const BoxDecoration(
           shape: BoxShape.circle,
           gradient:
@@ -50,7 +58,7 @@ class _UIAvatarState extends State<UIAvatar> {
           textStyle: Theme.of(context)
               .textTheme
               .bodyLarge!
-              .copyWith(fontSize: 20, color: AppColors.white),
+              .copyWith(fontSize: widget.fontSize, color: AppColors.white),
         ),
       ),
     );

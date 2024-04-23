@@ -1,12 +1,9 @@
 import 'dart:convert';
 
 import 'package:courier_rider/models/SignInResponse.dart';
+import 'package:courier_rider/navigation/bottomNavigation.dart';
 import 'package:courier_rider/screens/screens.dart';
-import 'package:courier_rider/utils/colors.dart';
-import 'package:courier_rider/utils/device_utility.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 
@@ -18,8 +15,6 @@ import 'package:courier_rider/services/service.dart';
 
 // models
 import 'package:courier_rider/models/models.dart';
-import 'package:courier_rider/models/UserInfo.dart';
-
 // utils
 import 'package:courier_rider/utils/utils.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +31,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController =
-      TextEditingController(text: 'vihagayohan94@gmail.com');
+      TextEditingController(text: 'johnwick@gmail.com');
 
   final TextEditingController passwordController =
       TextEditingController(text: 'asdfasdf');
@@ -68,8 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
         // store data in shared preference
         await Helper.setData<String>(Constants.user, jsonEncode(response));
         // navigate to contact details page
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ContactDataScreen()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AppBottomNavigation()));
       }
     }
   }
