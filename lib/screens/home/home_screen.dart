@@ -206,6 +206,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 10),
+
+              const UILocation(
+                  from: "Xeon Store, Colombo", to: "Waragoda, Kelaniya")
             ],
           ),
         )
