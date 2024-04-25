@@ -179,10 +179,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               space: Constants.mediumSpace,
             ),
 
+            // view location
+            UIElevatedButton(
+              label: "View Location",
+              onPress: () {},
+              isPrimary: false,
+              showSuffixIcon: true,
+              suffixIcon: const UIIcon(
+                iconData: Icons.map,
+                iconColor: AppColors.white,
+              ),
+            ),
+
+            const UISpacer(
+              space: Constants.mediumSpace,
+            ),
+
             // track order
             if (widget.orderDetail.status.name != Constants.outForDelivery)
               UIElevatedButton(
-                label: 'Track',
+                label: 'Start Delivery',
                 onPress: () {
                   Navigator.push(
                       context,
@@ -190,11 +206,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           builder: (context) =>
                               OrderTracking(orderDetail: widget.orderDetail)));
                 },
-                isPrimary: false,
                 showSuffixIcon: true,
                 suffixIcon: const UIIcon(
-                  iconData: Icons.track_changes,
-                  iconColor: AppColors.primary,
+                  iconData: Icons.local_shipping,
+                  iconColor: AppColors.white,
                 ),
               )
           ],
