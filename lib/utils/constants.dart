@@ -34,6 +34,7 @@ class Constants {
   static const String orderPlaced = "Order placed";
   static const String orderPickedUp = "Order picked-up";
   static const String processing = "Processing";
+  static const String readyForDelivery = "Ready for delivery";
   static const String atBranch = "At branch";
   static const String atStorage = "At store";
   static const String outForDelivery = "Out for delivery";
@@ -42,7 +43,7 @@ class Constants {
   static const String refunded = "Refunded";
 
   // baseURLs
-  static const String development_URL = "http://192.168.1.8:8000/api/v1";
-  static const String production_URL = "http://192.168.1.8:8000/api/v1";
-  static const String server_URL = "http://192.168.1.8:8000";
+  static const String development_URL = "http://192.168.1.9:8000/api/v1";
+  static const String production_URL = "http://192.168.1.9:8000/api/v1";
+  static const String server_URL = "http://192.168.1.9:8000";
 }
