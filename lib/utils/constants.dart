@@ -34,6 +34,7 @@ class Constants {
   static const String orderPlaced = "Order placed";
   static const String orderPickedUp = "Order picked-up";
   static const String processing = "Processing";
+  static const String readyForPickup = "Ready for pick-up";
   static const String readyForDelivery = "Ready for delivery";
   static const String atBranch = "At branch";
   static const String atStorage = "At store";

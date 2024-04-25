@@ -153,7 +153,7 @@ class Helper {
   static Future<LocationData> getCurrentLocation() async {
     try {
       Location location = Location();
-      final currentLocation = location.getLocation();
+      final currentLocation = await location.getLocation();
       return currentLocation;
     } catch (e) {
       throw Exception("Unable to fetch user's current location");
