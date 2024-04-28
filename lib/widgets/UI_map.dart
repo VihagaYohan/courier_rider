@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:courier_rider/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -44,10 +45,6 @@ class _UIMapState extends State<UIMap> {
   final GeoLocation.Location locationController = GeoLocation.Location();
   final Completer<GoogleMapController> controller =
       Completer<GoogleMapController>();
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(6.951985742426179, 79.91907061043204),
-    zoom: 14.4746,
-  );
 
   LocationData? currentLocationData;
   late Circle circle;
@@ -57,19 +54,12 @@ class _UIMapState extends State<UIMap> {
   Map<PolylineId, Polyline> polylines = {};
   late StreamSubscription locationSubscription;
 
-  /* 
-    kelaniya
-    6.951985742426179, 79.91907061043204
-
-    scope
-    6.918019253978862, 79.85590288768323
-   */
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) async => {initializeMap()});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      initializeMap();
+    });
   }
 
   Future<void> initializeMap() async {
@@ -78,31 +68,16 @@ class _UIMapState extends State<UIMap> {
     generatePolyLineFromPoints(coordinates);
   }
 
-  // fetch user current location
+  // fetch current location and move google map camera to current location
   Future<void> fetchLocation() async {
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
     LocationData locationData;
     Uint8List imageData = await getMarker();
 
-    /* serviceEnabled = await locationController.serviceEnabled();
-    if (serviceEnabled) {
-      serviceEnabled = await locationController.requestService();
-    } else {
-      return;
-    }
-
-    permissionGranted = await locationController.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await locationController.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    } */
-
+    // get user current location
     locationData = await locationController.getLocation();
     updateMarkerAndCircle(locationData, imageData);
 
+    // update state
     setState(() {
       currentLocationData = locationData;
     });
@@ -115,16 +90,15 @@ class _UIMapState extends State<UIMap> {
         locationController.onLocationChanged.listen((currentLocation) async {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
-        if (controller != null) {
-          final GoogleMapController mapController = await controller.future;
-          mapController.animateCamera(CameraUpdate.newCameraPosition(
-              CameraPosition(
-                  target: LatLng(currentLocation.latitude as double,
-                      currentLocation.longitude as double),
-                  zoom: 18.00)));
+        final GoogleMapController mapController = await controller.future;
+        mapController.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(
+                target: LatLng(currentLocation.latitude as double,
+                    currentLocation.longitude as double),
+                zoom: 18.00)));
 
-          // updateMarkerAndCircle(locationData, imageData);
-        }
+        updateMarkerAndCircle(currentLocation, imageData);
+        // updateMarkerAndCircle(locationData, imageData);
 
 /*         locationData = await locationController.getLocation();
 
@@ -199,25 +173,58 @@ class _UIMapState extends State<UIMap> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      mapType: MapType.terrain,
-      initialCameraPosition: CameraPosition(
-          target: LatLng(widget.sourceLatitude, widget.sourceLongitude),
-          zoom: 14.4746),
-      onMapCreated: (GoogleMapController mapController) {
-        controller.complete(mapController);
-      },
-      markers: Set.of((marker != null)
-          ? [
-              marker,
-              Marker(
-                  markerId: const MarkerId("destinationLocation"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: LatLng(
-                      widget.destinationLatitude, widget.destinationLongitude))
-            ]
-          : []),
-      polylines: Set<Polyline>.of(polylines.values),
+    return Stack(
+      children: <Widget>[
+        // google map
+        GoogleMap(
+          mapType: MapType.terrain,
+          initialCameraPosition: CameraPosition(
+              target: LatLng(widget.sourceLatitude, widget.sourceLongitude),
+              zoom: 14),
+          onMapCreated: (GoogleMapController mapController) {
+            controller.complete(mapController);
+          },
+          markers: Set.of((marker != null)
+              ? [
+                  marker,
+                  Marker(
+                      markerId: const MarkerId("destinationLocation"),
+                      icon: BitmapDescriptor.defaultMarker,
+                      position: LatLng(widget.destinationLatitude,
+                          widget.destinationLongitude)),
+                  Marker(
+                      markerId: const MarkerId("curentLocation"),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(034),
+                      position:
+                          LatLng(widget.sourceLatitude, widget.sourceLongitude))
+                ]
+              : []),
+          polylines: Set<Polyline>.of(polylines.values),
+        ),
+
+        // duration and distance
+        Padding(
+          padding: const EdgeInsets.symmetric(
+              vertical: Constants.smallSpace,
+              horizontal: Constants.mediumSpace),
+          child: Positioned(
+              child: Container(
+            width: double.infinity,
+            height: 50,
+            decoration: BoxDecoration(
+                color: DeviceUtils.isDarkmode(context) == true
+                    ? AppColors.dark
+                    : AppColors.white,
+                borderRadius: BorderRadius.circular(Constants.borderRadius),
+                border: Border.all(color: AppColors.primary, width: 3)),
+            child: const Center(
+              child: UITextView(
+                text: "Minutes remaining",
+              ),
+            ),
+          )),
+        ),
+      ],
     );
   }
 }

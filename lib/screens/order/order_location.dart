@@ -57,7 +57,7 @@ class _OrderLocationState extends State<OrderLocation> {
                     : widget
                         .orderDetail.receiverDetails.location.coordinates[1],
                 destinationLongitude: widget.headerTitle == "Pick-up Location"
-                    ? widget.orderDetail.receiverDetails.location.coordinates[0]
+                    ? widget.orderDetail.senderDetails.location.coordinates[0]
                     : widget
                         .orderDetail.receiverDetails.location.coordinates[0]),
           );
