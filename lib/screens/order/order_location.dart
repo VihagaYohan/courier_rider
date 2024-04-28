@@ -58,11 +58,13 @@ class _OrderLocationState extends State<OrderLocation> {
             paddingBottom: 0,
             showAppBar: true,
             appbar: UIAppBar(title: widget.headerTitle),
-            children: UIMap(
+            children:
+                const Placeholder() /* UIMap(
               sourceLatitude: locatinProvider.locationData!.latitude as double,
               sourceLongitude:
                   locatinProvider.locationData!.longitude as double,
-            ),
+            ) */
+            ,
           );
         }
       },

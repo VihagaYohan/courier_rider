@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:location/location.dart';
+// import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:courier_rider/models/UserInfo.dart';
 import 'package:flutter/foundation.dart';
@@ -150,11 +151,18 @@ class Helper {
   }
 
   // get current user location
-  static Future<LocationData> getCurrentLocation() async {
+  static Future<Position> getCurrentLocation() async {
     try {
-      Location location = Location();
+      /*   Location location = Location();
       final currentLocation = await location.getLocation();
-      return currentLocation;
+      return currentLocation; */
+      bool hasPermission = await Permissions.hasLocationPermission();
+      print('has permission : $hasPermission');
+
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      return position;
     } catch (e) {
       throw Exception("Unable to fetch user's current location");
     }
