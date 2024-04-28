@@ -4,3 +4,4 @@ export './constants.dart';
 export './device_utility.dart';
 export './formatter.dart';
 export './helpers.dart';
+export './permissions.dart';

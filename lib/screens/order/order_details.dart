@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:courier_rider/screens/order/order_location.dart';
 import 'package:courier_rider/screens/order/order_tracking.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     } catch (e) {
       print(e);
     }
+  }
+
+  // generate button label and header title for order location page
+  String getTitle() {
+    return widget.orderDetail.status.name == Constants.readyForPickup
+        ? "Pick-up Location"
+        : widget.orderDetail.status.name == Constants.readyForDelivery
+            ? 'Drop Location'
+            : 'Pick-up Location';
   }
 
   @override
@@ -145,6 +155,34 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               space: Constants.mediumSpace,
             ),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                // status label
+                UITextView(
+                  text: "Delivery status",
+                  textStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(fontWeight: FontWeight.w500),
+                ),
+
+                // delivery status
+                UITextView(
+                  text: widget.orderDetail.status.name,
+                  textStyle: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: AppColors.primary),
+                )
+              ],
+            ),
+
+            const UISpacer(
+              space: Constants.mediumSpace,
+            ),
+
             const UIHeader(
               title: "Order Details",
             ),
@@ -179,10 +217,34 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               space: Constants.mediumSpace,
             ),
 
+            // view location
+            UIElevatedButton(
+              label: getTitle(),
+              onPress: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OrderLocation(
+                              orderDetail: widget.orderDetail,
+                              headerTitle: getTitle(),
+                            )));
+              },
+              isPrimary: false,
+              showSuffixIcon: true,
+              suffixIcon: const UIIcon(
+                iconData: Icons.map,
+                iconColor: AppColors.white,
+              ),
+            ),
+
+            const UISpacer(
+              space: Constants.mediumSpace,
+            ),
+
             // track order
-            if (widget.orderDetail.status.name != Constants.outForDelivery)
+            if (widget.orderDetail.status.name == Constants.readyForDelivery)
               UIElevatedButton(
-                label: 'Track',
+                label: 'Start Delivery',
                 onPress: () {
                   Navigator.push(
                       context,
@@ -190,11 +252,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           builder: (context) =>
                               OrderTracking(orderDetail: widget.orderDetail)));
                 },
-                isPrimary: false,
                 showSuffixIcon: true,
                 suffixIcon: const UIIcon(
-                  iconData: Icons.track_changes,
-                  iconColor: AppColors.primary,
+                  iconData: Icons.local_shipping,
+                  iconColor: AppColors.white,
                 ),
               )
           ],

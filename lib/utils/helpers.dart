@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:location/location.dart';
 
 import 'package:courier_rider/models/UserInfo.dart';
 import 'package:flutter/foundation.dart';
@@ -145,6 +146,23 @@ class Helper {
       }
     } catch (e) {
       throw Exception("Unable to get current user Id");
+    }
+  }
+
+  // get current user location
+  static Future<LocationData?> getCurrentLocation() async {
+    try {
+      bool hasPermission = await Permissions.hasLocationPermission();
+
+      if (hasPermission) {
+        Location location = Location();
+        final currentLocation = await location.getLocation();
+        return currentLocation;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Unable to fetch user's current location");
     }
   }
 }

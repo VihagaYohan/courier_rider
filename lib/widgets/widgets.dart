@@ -51,3 +51,6 @@ export 'UI_location.dart';
 
 // user profile avatar
 export 'UI_avatar.dart';
+
+// google map
+export 'UI_map.dart';
