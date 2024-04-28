@@ -29,27 +29,16 @@ class _OrderLocationState extends State<OrderLocation> {
         .fetchCurrentLocation();
   }
 
-  // fetch current location
-  getCurrentLocation() async {
-    try {
-      final provider = Provider.of<LocationProvider>(context);
-      LocationData response = provider.fetchCurrentLocation();
-      print(jsonEncode(response));
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<LocationProvider>(
-      builder: (context, locatinProvider, child) {
-        if (locatinProvider.isLoading == true) {
+      builder: (context, locationProvider, child) {
+        if (locationProvider.isLoading == true) {
           return const UIProgressIndicator();
-        } else if (locatinProvider.isLoading == false &&
-            locatinProvider.errorMessage.isNotEmpty) {
+        } else if (locationProvider.isLoading == false &&
+            locationProvider.errorMessage.isNotEmpty) {
           return Center(
-            child: UITextView(text: locatinProvider.errorMessage),
+            child: UITextView(text: locationProvider.errorMessage),
           );
         } else {
           return UIContainer(
@@ -58,13 +47,11 @@ class _OrderLocationState extends State<OrderLocation> {
             paddingBottom: 0,
             showAppBar: true,
             appbar: UIAppBar(title: widget.headerTitle),
-            children:
-                const Placeholder() /* UIMap(
-              sourceLatitude: locatinProvider.locationData!.latitude as double,
+            children: UIMap(
+              sourceLatitude: locationProvider.locationData!.latitude as double,
               sourceLongitude:
-                  locatinProvider.locationData!.longitude as double,
-            ) */
-            ,
+                  locationProvider.locationData!.longitude as double,
+            ),
           );
         }
       },
