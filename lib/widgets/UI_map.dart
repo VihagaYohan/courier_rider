@@ -47,12 +47,11 @@ class _UIMapState extends State<UIMap> {
       Completer<GoogleMapController>();
 
   LocationData? currentLocationData;
-  late Circle circle;
   late Marker marker;
-  late Uint8List currentLocationIcon;
   final Map<String, Marker> markers = {};
   Map<PolylineId, Polyline> polylines = {};
   late StreamSubscription locationSubscription;
+  bool isLoaded = false;
 
   @override
   void initState() {
@@ -66,10 +65,15 @@ class _UIMapState extends State<UIMap> {
     await fetchLocation();
     final coordinates = await fetchPolyLinePoints();
     generatePolyLineFromPoints(coordinates);
+    setState(() {
+      isLoaded = true;
+    });
   }
 
   // fetch current location and move google map camera to current location
   Future<void> fetchLocation() async {
+    print('calling fetch location');
+
     LocationData locationData;
     Uint8List imageData = await getMarker();
 
@@ -90,14 +94,19 @@ class _UIMapState extends State<UIMap> {
         locationController.onLocationChanged.listen((currentLocation) async {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
-        final GoogleMapController mapController = await controller.future;
+        setState(() {
+          currentLocationData = currentLocation;
+        });
+        updateMarkerAndCircle(currentLocationData!, imageData);
+
+        /* final GoogleMapController mapController = await controller.future;
         mapController.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
                 target: LatLng(currentLocation.latitude as double,
                     currentLocation.longitude as double),
-                zoom: 18.00)));
+                zoom: 15.00)));
 
-        updateMarkerAndCircle(currentLocation, imageData);
+        updateMarkerAndCircle(currentLocation, imageData); */
         // updateMarkerAndCircle(locationData, imageData);
 
 /*         locationData = await locationController.getLocation();
@@ -113,18 +122,19 @@ class _UIMapState extends State<UIMap> {
 
   @override
   void dispose() {
-    if (locationSubscription != null) {
-      locationSubscription.cancel();
-    }
+    locationSubscription.cancel();
     super.dispose();
   }
 
+  // get routes from current location to destination
   Future<List<LatLng>> fetchPolyLinePoints() async {
     final polylinePoints = PolylinePoints();
 
     final result = await polylinePoints.getRouteBetweenCoordinates(
         KEYS.googleAPI,
-        PointLatLng(widget.sourceLatitude, widget.sourceLongitude),
+        // PointLatLng(widget.sourceLatitude, widget.sourceLongitude),
+        PointLatLng(currentLocationData?.latitude as double,
+            currentLocationData?.longitude as double),
         PointLatLng(widget.destinationLatitude, widget.destinationLongitude));
 
     if (result.points.isNotEmpty) {
@@ -136,6 +146,7 @@ class _UIMapState extends State<UIMap> {
     }
   }
 
+  // generate polylines for map
   Future<void> generatePolyLineFromPoints(
       List<LatLng> polylineCoordinates) async {
     const id = PolylineId('polyline');
@@ -148,12 +159,14 @@ class _UIMapState extends State<UIMap> {
     setState(() => polylines[id] = polyline);
   }
 
+  // create bitmap from asset file
   Future<Uint8List> getMarker() async {
     ByteData byteData = await DefaultAssetBundle.of(context)
         .load('assets/images/other/vehicle1.png');
     return byteData.buffer.asUint8List();
   }
 
+  // create a marker using custom marker icon
   void updateMarkerAndCircle(
       GeoLocation.LocationData newLocationData, Uint8List imageData) {
     LatLng latLng = LatLng(newLocationData.latitude as double,
@@ -173,58 +186,66 @@ class _UIMapState extends State<UIMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        // google map
-        GoogleMap(
-          mapType: MapType.terrain,
-          initialCameraPosition: CameraPosition(
-              target: LatLng(widget.sourceLatitude, widget.sourceLongitude),
-              zoom: 14),
-          onMapCreated: (GoogleMapController mapController) {
-            controller.complete(mapController);
-          },
-          markers: Set.of((marker != null)
-              ? [
-                  marker,
-                  Marker(
-                      markerId: const MarkerId("destinationLocation"),
-                      icon: BitmapDescriptor.defaultMarker,
-                      position: LatLng(widget.destinationLatitude,
-                          widget.destinationLongitude)),
-                  Marker(
-                      markerId: const MarkerId("curentLocation"),
-                      icon: BitmapDescriptor.defaultMarkerWithHue(034),
-                      position:
-                          LatLng(widget.sourceLatitude, widget.sourceLongitude))
-                ]
-              : []),
-          polylines: Set<Polyline>.of(polylines.values),
-        ),
-
-        // duration and distance
-        Padding(
-          padding: const EdgeInsets.symmetric(
-              vertical: Constants.smallSpace,
-              horizontal: Constants.mediumSpace),
-          child: Positioned(
-              child: Container(
-            width: double.infinity,
-            height: 50,
-            decoration: BoxDecoration(
-                color: DeviceUtils.isDarkmode(context) == true
-                    ? AppColors.dark
-                    : AppColors.white,
-                borderRadius: BorderRadius.circular(Constants.borderRadius),
-                border: Border.all(color: AppColors.primary, width: 3)),
-            child: const Center(
-              child: UITextView(
-                text: "Minutes remaining",
+    return isLoaded
+        ? Stack(
+            children: <Widget>[
+              // google map
+              GoogleMap(
+                mapType: MapType.terrain,
+                initialCameraPosition: CameraPosition(
+                    target:
+                        LatLng(widget.sourceLatitude, widget.sourceLongitude),
+                    zoom: 15),
+                onMapCreated: (GoogleMapController mapController) {
+                  controller.complete(mapController);
+                },
+                // ignore: unnecessary_null_comparison
+                markers: Set.of((marker != null)
+                    ? [
+                        marker,
+                        Marker(
+                            markerId: const MarkerId("destinationLocation"),
+                            icon: BitmapDescriptor.defaultMarker,
+                            position: LatLng(widget.destinationLatitude,
+                                widget.destinationLongitude),
+                            infoWindow: const InfoWindow(title: "Destination")),
+                        Marker(
+                            markerId: const MarkerId("curentLocation"),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(034),
+                            position: LatLng(
+                                widget.sourceLatitude, widget.sourceLongitude),
+                            infoWindow: const InfoWindow(
+                                title: "Your current location"))
+                      ]
+                    : []),
+                polylines: Set<Polyline>.of(polylines.values),
               ),
-            ),
-          )),
-        ),
-      ],
-    );
+
+              // duration and distance
+              Positioned(
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: Constants.smallSpace,
+                    horizontal: Constants.mediumSpace),
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                      color: DeviceUtils.isDarkmode(context) == true
+                          ? AppColors.dark
+                          : AppColors.white,
+                      borderRadius:
+                          BorderRadius.circular(Constants.borderRadius),
+                      border: Border.all(color: AppColors.primary, width: 3)),
+                  child: const Center(
+                    child: UITextView(
+                      text: "Minutes remaining",
+                    ),
+                  ),
+                ),
+              ))
+            ],
+          )
+        : const UIProgressIndicator();
   }
 }
