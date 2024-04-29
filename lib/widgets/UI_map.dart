@@ -52,6 +52,7 @@ class _UIMapState extends State<UIMap> {
   Map<PolylineId, Polyline> polylines = {};
   late StreamSubscription locationSubscription;
   bool isLoaded = false;
+  double distance = 0;
 
   @override
   void initState() {
@@ -72,8 +73,6 @@ class _UIMapState extends State<UIMap> {
 
   // fetch current location and move google map camera to current location
   Future<void> fetchLocation() async {
-    print('calling fetch location');
-
     LocationData locationData;
     Uint8List imageData = await getMarker();
 
@@ -86,10 +85,6 @@ class _UIMapState extends State<UIMap> {
       currentLocationData = locationData;
     });
 
-    /* if (locationSubscription != null) {
-      locationSubscription.cancel();
-    } */
-
     locationSubscription =
         locationController.onLocationChanged.listen((currentLocation) async {
       if (currentLocation.latitude != null &&
@@ -98,24 +93,7 @@ class _UIMapState extends State<UIMap> {
           currentLocationData = currentLocation;
         });
         updateMarkerAndCircle(currentLocationData!, imageData);
-
-        /* final GoogleMapController mapController = await controller.future;
-        mapController.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(
-                target: LatLng(currentLocation.latitude as double,
-                    currentLocation.longitude as double),
-                zoom: 15.00)));
-
-        updateMarkerAndCircle(currentLocation, imageData); */
-        // updateMarkerAndCircle(locationData, imageData);
-
-/*         locationData = await locationController.getLocation();
-
-        setState(() {
-          currentLocationData = locationData;
-        });
-
-        updateMarkerAndCircle(locationData, imageData); */
+        calculateDistance();
       }
     });
   }
@@ -184,6 +162,22 @@ class _UIMapState extends State<UIMap> {
     });
   }
 
+  // calculate distance
+  void calculateDistance() async {
+    try {
+      double distanceInMeters = Geolocator.distanceBetween(
+          currentLocationData!.latitude!,
+          currentLocationData!.longitude!,
+          widget.destinationLatitude,
+          widget.destinationLongitude);
+      setState(() {
+        distance = distanceInMeters;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLoaded
@@ -237,9 +231,10 @@ class _UIMapState extends State<UIMap> {
                       borderRadius:
                           BorderRadius.circular(Constants.borderRadius),
                       border: Border.all(color: AppColors.primary, width: 3)),
-                  child: const Center(
+                  child: Center(
                     child: UITextView(
-                      text: "Minutes remaining",
+                      text:
+                          "${distance.ceil() > 1000 ? distance.ceil() / 1000 : distance.ceil()} ${distance.ceil() > 1000 ? ' Km' : ' m'} remaining",
                     ),
                   ),
                 ),
