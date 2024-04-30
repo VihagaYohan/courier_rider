@@ -75,7 +75,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         ? "Pick-up Location"
         : widget.orderDetail.status.name == Constants.readyForDelivery
             ? 'Drop Location'
-            : 'Pick-up Location';
+            : widget.orderDetail.status.name == Constants.orderPickedUp
+                ? 'Drop Location'
+                : 'Pick-up Location';
   }
 
   @override
