@@ -48,18 +48,16 @@ class _OrderLocationState extends State<OrderLocation> {
             showAppBar: true,
             appbar: UIAppBar(title: widget.headerTitle),
             children: UIMap(
-                sourceLatitude:
-                    locationProvider.locationData!.latitude as double,
-                sourceLongitude:
-                    locationProvider.locationData!.longitude as double,
-                destinationLatitude: widget.headerTitle == "Pick-up Location"
-                    ? widget.orderDetail.senderDetails.location.coordinates[1]
-                    : widget
-                        .orderDetail.receiverDetails.location.coordinates[1],
-                destinationLongitude: widget.headerTitle == "Pick-up Location"
-                    ? widget.orderDetail.senderDetails.location.coordinates[0]
-                    : widget
-                        .orderDetail.receiverDetails.location.coordinates[0]),
+              sourceLatitude: locationProvider.locationData!.latitude as double,
+              sourceLongitude:
+                  locationProvider.locationData!.longitude as double,
+              destinationLatitude: widget.headerTitle == "Drop Location"
+                  ? widget.orderDetail.receiverDetails.location.coordinates[1]
+                  : widget.orderDetail.senderDetails.location.coordinates[1],
+              destinationLongitude: widget.headerTitle == "Drop Location"
+                  ? widget.orderDetail.receiverDetails.location.coordinates[0]
+                  : widget.orderDetail.senderDetails.location.coordinates[0],
+            ),
           );
         }
       },

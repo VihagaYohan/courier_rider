@@ -1,5 +1,6 @@
 // models
 import 'dart:convert';
+import 'package:courier_rider/services/helper_service.dart';
 import 'package:flutter/material.dart';
 
 // models
@@ -10,16 +11,19 @@ import 'package:courier_rider/services/service.dart';
 
 // utils
 import 'package:courier_rider/utils/utils.dart';
+import 'package:get/get.dart';
 
 class OrderProvider extends ChangeNotifier {
   bool loading = false;
   String error = "";
   OrderRequest? order;
   List<OrderResponse> orders = [];
+  List<CourierStatus> courierStatus = [];
 
   bool get isLoading => loading;
   String get errorMessage => error;
   List<OrderResponse> get orderList => orders;
+  List<CourierStatus> get statusList => courierStatus;
 
   void setLoading(bool value) {
     loading = value;
@@ -45,6 +49,7 @@ class OrderProvider extends ChangeNotifier {
       final response = await OrderService.createOrder(payload);
       if (response == 200) {
         onSuccess();
+        setLoading(true);
         return true;
       } else {
         setError("Unable to create courier order");
@@ -69,6 +74,23 @@ class OrderProvider extends ChangeNotifier {
       }
     } catch (e) {
       print(e);
+      setError("Error occured\nPlease try again");
+    }
+    setLoading(false);
+  }
+
+  // get all courier order status types
+  getCourierStatusTypes() async {
+    try {
+      setLoading(true);
+      List<CourierStatus> response = await HelperService.getAllCourierStatus();
+      if (response.isNotEmpty) {
+        onSuccess();
+        courierStatus = response;
+      } else {
+        setError("There are no courier status to show");
+      }
+    } catch (e) {
       setError("Error occured\nPlease try again");
     }
     setLoading(false);
