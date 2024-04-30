@@ -14,3 +14,4 @@ export 'OrderResponse.dart';
 export 'StatusType.dart';
 export 'CourierType.dart';
 export 'PackageType.dart';
+export 'CourierStatus.dart';

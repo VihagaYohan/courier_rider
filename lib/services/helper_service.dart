@@ -81,6 +81,26 @@ class HelperService {
     }
   }
 
+  // get all courier status
+  static getAllCourierStatus() async {
+    try {
+      List<CourierStatus> courierStatus = [];
+      final response = await http.get(Uri.parse(Endpoints.orderStatus));
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        for (var item in jsonData['data']) {
+          final statusItem = CourierStatus(id: item['_id'], name: item['name']);
+          courierStatus.add(statusItem);
+        }
+        return courierStatus;
+      } else {
+        throw Exception("Failed to load courier status types");
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch courier status");
+    }
+  }
+
   // get shipment type by id
   static getShipmentTypeById(String typeId) async {
     try {
