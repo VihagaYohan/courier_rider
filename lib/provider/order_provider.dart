@@ -1,5 +1,6 @@
 // models
 import 'dart:convert';
+import 'package:courier_rider/models/OrderResponse.dart';
 import 'package:courier_rider/services/helper_service.dart';
 import 'package:flutter/material.dart';
 
@@ -19,11 +20,13 @@ class OrderProvider extends ChangeNotifier {
   OrderRequest? order;
   List<OrderResponse> orders = [];
   List<CourierStatus> courierStatus = [];
+  OrderResponse? currentOrder;
 
   bool get isLoading => loading;
   String get errorMessage => error;
   List<OrderResponse> get orderList => orders;
   List<CourierStatus> get statusList => courierStatus;
+  OrderResponse? get getCurentOrder => currentOrder;
 
   void setLoading(bool value) {
     loading = value;
@@ -73,7 +76,6 @@ class OrderProvider extends ChangeNotifier {
         setError('There are no orders to show');
       }
     } catch (e) {
-      print(e);
       setError("Error occured\nPlease try again");
     }
     setLoading(false);
@@ -92,6 +94,22 @@ class OrderProvider extends ChangeNotifier {
       }
     } catch (e) {
       setError("Error occured\nPlease try again");
+    }
+    setLoading(false);
+  }
+
+  // update order status
+  updateOrderStatus(OrderResponse payload) async {
+    try {
+      setLoading(true);
+      final response = await OrderService.updateExistingOrderStatus(payload);
+      if (response == true) {
+        onSuccess();
+      } else {
+        throw Exception("Unable to update update order");
+      }
+    } catch (e) {
+      setError("Error occured\nPlease try again\n$e");
     }
     setLoading(false);
   }

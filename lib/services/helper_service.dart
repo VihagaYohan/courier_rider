@@ -89,7 +89,10 @@ class HelperService {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         for (var item in jsonData['data']) {
-          final statusItem = CourierStatus(id: item['_id'], name: item['name']);
+          final statusItem = CourierStatus(
+              id: item['_id'],
+              name: item['name'],
+              createdAt: item['createdAt']);
           courierStatus.add(statusItem);
         }
         return courierStatus;

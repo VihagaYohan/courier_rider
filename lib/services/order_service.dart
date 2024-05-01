@@ -57,7 +57,8 @@ class OrderService {
                   ReceiverDetailsResponse.fromJson(item['receiverDetails']),
               orderTotal: item['orderTotal'].toDouble(),
               paymentType: PaymentTypes.fromJson(item['paymentType']),
-              createdOn: item['createdOn']);
+              createdOn: item['createdOn'],
+              rider: Rider.fromJson(item['rider']));
           orders.add(orderItem);
         }
         return orders;
@@ -66,6 +67,27 @@ class OrderService {
       }
     } catch (e) {
       throw Exception("Error at fetching orders $e");
+    }
+  }
+
+  // update order
+  static updateExistingOrderStatus(OrderResponse payload) async {
+    try {
+      final token = await Helper.getToken();
+      final response = await http.put(Uri.parse(Endpoints.updateOrderStatus),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'authorization': token
+          },
+          body: jsonEncode(payload.toJson()));
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      throw Exception('Unable to update order $e');
     }
   }
 }
