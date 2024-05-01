@@ -34,4 +34,5 @@ class Endpoints {
   static String get orderStatus => '$baseUrl/courierStates';
   static String get order => '$baseUrl/orders';
   String get orderList => '$baseUrl/orders/user/$id/rider';
+  static String get updateOrderStatus => '$baseUrl/orders';
 }

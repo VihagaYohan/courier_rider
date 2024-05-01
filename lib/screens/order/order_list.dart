@@ -30,6 +30,20 @@ class _OrderListScreenState extends State<OrderListScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      fetchData();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (mounted) {
+      fetchData();
+    }
+  }
+
+  void fetchData() {
     Provider.of<OrderProvider>(context, listen: false).getAllOrders();
   }
 
@@ -140,8 +154,12 @@ class _OrderListScreenState extends State<OrderListScreen> {
             // status
             orderStatus(context, item.status.name),
 
+            const UISpacer(
+              space: Constants.smallSpace,
+            ),
+
             // delivery person
-            if (item.riderName != null)
+            if (item.rider != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,7 +171,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                         ),
                   ),
                   UITextView(
-                    text: item.riderName!,
+                    text: item.rider?.name ?? "",
                     textStyle: Theme.of(context)
                         .textTheme
                         .bodyMedium!

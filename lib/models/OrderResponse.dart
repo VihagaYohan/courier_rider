@@ -4,7 +4,7 @@ import 'package:courier_rider/models/models.dart';
 class OrderResponse {
   final String id;
   final String trackingId;
-  final Status status;
+  late final Status status;
   final CourierType courierType;
   final PackageType packageType;
   final String packageSize;
@@ -13,7 +13,7 @@ class OrderResponse {
   final double orderTotal;
   final PaymentTypes paymentType;
   final String createdOn;
-  final String? riderName;
+  final Rider? rider;
 
   OrderResponse(
       {required this.id,
@@ -27,7 +27,7 @@ class OrderResponse {
       required this.orderTotal,
       required this.paymentType,
       required this.createdOn,
-      this.riderName});
+      this.rider});
 
   // serialize Order reponse object to JSON
   Map<String, dynamic> toJson() {
@@ -43,7 +43,7 @@ class OrderResponse {
       'orderTotal': orderTotal,
       'paymentType': paymentType,
       'createdOn': createdOn,
-      'riderName': riderName
+      'riderName': rider
     };
   }
 
@@ -61,6 +61,6 @@ class OrderResponse {
         orderTotal: json['orderTotal'],
         paymentType: json['paymentType'],
         createdOn: json['createdOn'],
-        riderName: json['riderName']);
+        rider: json['rider']);
   }
 }

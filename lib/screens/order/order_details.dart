@@ -34,9 +34,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   int index = 0;
   late IO.Socket socket;
   List<CourierStatus> courierStatuses = [];
-  /*  final channel = WebSocketChannel.connect(
-    Uri.parse(''),
-  ); */
+  late CourierStatus selectedStatus;
 
   @override
   void initState() {
@@ -45,20 +43,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     OrderProvider provider = Provider.of<OrderProvider>(context, listen: false);
     provider.getCourierStatusTypes();
     connect();
-  }
-
-  continueStep() {
-    if (index < 2) {
-      setState(() {
-        index += 1;
-      });
-    }
-  }
-
-  onStepTapped(int value) {
-    setState(() {
-      index = value;
-    });
   }
 
   void connect() {
@@ -112,7 +96,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-// tracking number
+                        // tracking number
                         UITextView(
                           text: 'Tracking # - ${widget.orderDetail.trackingId}',
                           textStyle: Theme.of(context)
@@ -187,7 +171,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
                         // delivery status
                         UIDropDown(
-                          placeholderText: "Delivery Status",
+                          placeholderText: widget.orderDetail.status.name,
                           optionList: orderProvider.statusList,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -197,8 +181,36 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           },
                           onChanged: (value) {
                             setState(() {
-                              // widget.shipmentType = value;
-                              // widget.shipmentTypeController.text = value;
+                              CourierStatus? courierStatus =
+                                  Helper.findCourierStatusById(
+                                      value, orderProvider.statusList);
+
+                              if (courierStatus != null) {
+                                setState(() {
+                                  selectedStatus = courierStatus;
+                                });
+                                OrderResponse orderPayload = OrderResponse(
+                                    id: widget.orderDetail.id,
+                                    trackingId: widget.orderDetail.trackingId,
+                                    status: Status(
+                                        id: courierStatus.id,
+                                        name: courierStatus.name,
+                                        createdAt: courierStatus.createdAt),
+                                    courierType: widget.orderDetail.courierType,
+                                    packageType: widget.orderDetail.packageType,
+                                    packageSize: widget.orderDetail.packageSize,
+                                    senderDetails:
+                                        widget.orderDetail.senderDetails,
+                                    receiverDetails:
+                                        widget.orderDetail.receiverDetails,
+                                    orderTotal: widget.orderDetail.orderTotal,
+                                    paymentType: widget.orderDetail.paymentType,
+                                    createdOn: widget.orderDetail.createdOn,
+                                    rider: widget.orderDetail.rider);
+
+                                // update order status
+                                orderProvider.updateOrderStatus(orderPayload);
+                              }
                             });
                           },
                         ),

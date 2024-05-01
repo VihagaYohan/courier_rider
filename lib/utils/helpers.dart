@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as GeoLocation;
 
 import 'package:courier_rider/models/UserInfo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // models
+import 'package:courier_rider/models/models.dart';
 import 'package:courier_rider/models/OrderTypes.dart';
 
 // utils
@@ -150,12 +151,12 @@ class Helper {
   }
 
   // get current user location
-  static Future<LocationData?> getCurrentLocation() async {
+  static Future<GeoLocation.LocationData?> getCurrentLocation() async {
     try {
       bool hasPermission = await Permissions.hasLocationPermission();
 
       if (hasPermission) {
-        Location location = Location();
+        GeoLocation.Location location = GeoLocation.Location();
         final currentLocation = await location.getLocation();
         return currentLocation;
       } else {
@@ -164,5 +165,21 @@ class Helper {
     } catch (e) {
       throw Exception("Unable to fetch user's current location");
     }
+  }
+
+  // find courier status based on courier status id
+  static CourierStatus? findCourierStatusById(
+      String id, List<CourierStatus> statusList) {
+    try {
+      for (CourierStatus status in statusList) {
+        if (status.id == id) {
+          return status;
+        }
+      }
+      return null;
+    } catch (e) {
+      print(e);
+    }
+    return null;
   }
 }
