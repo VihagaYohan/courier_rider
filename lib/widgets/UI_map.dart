@@ -238,7 +238,16 @@ class _UIMapState extends State<UIMap> {
                     ),
                   ),
                 ),
-              ))
+              )),
+
+              // mark as complete
+              Positioned(
+                bottom: Constants.smallSpace,
+                left: Constants.largeSpace * 2,
+                right: Constants.largeSpace * 2,
+                child: UIElevatedButton(
+                    label: "Mark as completed", onPress: () {}),
+              )
             ],
           )
         : const UIProgressIndicator();

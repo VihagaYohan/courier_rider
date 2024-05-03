@@ -103,11 +103,8 @@ class OrderProvider extends ChangeNotifier {
     try {
       setLoading(true);
       final response = await OrderService.updateExistingOrderStatus(payload);
-      if (response == true) {
-        onSuccess();
-      } else {
-        throw Exception("Unable to update update order");
-      }
+      onSuccess();
+      return response['data'];
     } catch (e) {
       setError("Error occured\nPlease try again\n$e");
     }

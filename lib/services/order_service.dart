@@ -74,7 +74,8 @@ class OrderService {
   static updateExistingOrderStatus(OrderResponse payload) async {
     try {
       final token = await Helper.getToken();
-      final response = await http.put(Uri.parse(Endpoints.updateOrderStatus),
+      final response = await http.put(
+          Uri.parse(Endpoints(id: payload.id).updateOrderStatus),
           headers: <String, String>{
             'Content-Type': 'application/json',
             'authorization': token
@@ -82,7 +83,7 @@ class OrderService {
           body: jsonEncode(payload.toJson()));
 
       if (response.statusCode == 200) {
-        return true;
+        return jsonDecode(response.body);
       } else {
         return false;
       }
