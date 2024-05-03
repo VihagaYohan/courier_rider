@@ -64,11 +64,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   // generate button label and header title for order location page
   String getTitle() {
-    return widget.orderDetail.status.name == Constants.readyForPickup
+    return widget.orderDetail.status.name == Constants.readyForPickup ||
+            currentStatus == Constants.readyForPickup
         ? "Pick-up Location"
-        : widget.orderDetail.status.name == Constants.readyForDelivery
+        : widget.orderDetail.status.name == Constants.readyForDelivery ||
+                currentStatus == Constants.readyForDelivery
             ? 'Drop Location'
-            : widget.orderDetail.status.name == Constants.orderPickedUp
+            : widget.orderDetail.status.name == Constants.orderPickedUp ||
+                    currentStatus == Constants.orderPickedUp
                 ? 'Drop Location'
                 : 'Pick-up Location';
   }
