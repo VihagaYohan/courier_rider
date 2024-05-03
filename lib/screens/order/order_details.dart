@@ -35,6 +35,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   late IO.Socket socket;
   List<CourierStatus> courierStatuses = [];
   late CourierStatus selectedStatus;
+  late String currentStatus = "";
 
   @override
   void initState() {
@@ -171,7 +172,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
                         // delivery status
                         UIDropDown(
-                          placeholderText: widget.orderDetail.status.name,
+                          placeholderText: currentStatus.isNotEmpty
+                              ? currentStatus
+                              : widget.orderDetail.status.name,
                           optionList: orderProvider.statusList,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -209,7 +212,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     rider: widget.orderDetail.rider);
 
                                 // update order status
-                                orderProvider.updateOrderStatus(orderPayload);
+                                orderProvider
+                                    .updateOrderStatus(orderPayload)
+                                    .then((value) {
+                                  setState(() {
+                                    currentStatus = value;
+                                  });
+                                });
                               }
                             });
                           },
