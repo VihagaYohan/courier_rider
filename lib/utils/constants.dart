@@ -44,7 +44,7 @@ class Constants {
   static const String refunded = "Refunded";
 
   // baseURLs
-  static const String development_URL = "http://192.168.1.3:8000/api/v1";
-  static const String production_URL = "http://192.168.1.3:8000/api/v1";
-  static const String server_URL = "http://192.168.1.3:8000";
+  static const String development_URL = "http://192.168.1.6:8000/api/v1";
+  static const String production_URL = "http://192.168.1.6:8000/api/v1";
+  static const String server_URL = "http://192.168.1.6:8000";
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:courier_rider/models/OrderTrackingRequest.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -89,6 +90,22 @@ class OrderService {
       }
     } catch (e) {
       throw Exception('Unable to update order $e');
+    }
+  }
+
+  // update order tracking
+  static updateOrderTracking(OrderTrackingRequest payload) async {
+    try {
+      final response = await http.post(Uri.parse(Endpoints.updateOrderTracking),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(payload.toJson()));
+
+      print('service response');
+      print(response);
+    } catch (e) {
+      throw Exception("Unable to update order tracking data");
     }
   }
 }

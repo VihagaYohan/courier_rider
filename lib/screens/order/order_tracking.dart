@@ -27,6 +27,7 @@ class OrderTracking extends StatefulWidget {
 
 class _OrderTrackingState extends State<OrderTracking> {
   final GeoLocation.Location locationController = GeoLocation.Location();
+  // final LiveLocation.Location location = LiveLocation.Location();
 
   final Completer<GoogleMapController> controller =
       Completer<GoogleMapController>();
@@ -47,12 +48,15 @@ class _OrderTrackingState extends State<OrderTracking> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) async => {initializeMap()});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      initializeMap();
+    });
   }
 
   Future<void> initializeMap() async {
-    await fetchLocation();
+    final response = await fetchLocation();
+    print('after fetch');
+    print(response);
     final coordinates = await fetchPolylinePoints();
     generatePolyLineFromPoints(coordinates);
   }
@@ -90,35 +94,41 @@ class _OrderTrackingState extends State<OrderTracking> {
     setState(() => polylines[id] = polyline);
   }
 
-  Future<void> fetchLocation() async {
+  Future<bool> fetchLocation() async {
+    print('calling fetch');
     bool serviceEnabled;
     PermissionStatus permissionGranted;
 
     serviceEnabled = await locationController.serviceEnabled();
+    print('service working');
     if (serviceEnabled) {
       serviceEnabled = await locationController.requestService();
     } else {
-      return;
+      return false;
     }
 
     permissionGranted = await locationController.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await locationController.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
-        return;
+        return false;
       }
     }
 
-    locationController.onLocationChanged.listen((currentLocation) {
+    return serviceEnabled;
+
+    /* locationController.onLocationChanged.listen((currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         setState(() {
           currentPosition =
               LatLng(currentLocation.latitude!, currentLocation.longitude!);
         });
-        print(currentPosition);
+        print('hello');
+        print(
+            'current lat ${currentPosition?.latitude} current lng ${currentPosition?.longitude}');
       }
-    });
+    }); */
   }
 
   @override
@@ -161,9 +171,4 @@ class _OrderTrackingState extends State<OrderTracking> {
       ),
     );
   }
-
-  /* Future<void> goToLake() async {
-    final GoogleMapController controller = await controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  } */
 }
