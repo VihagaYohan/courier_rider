@@ -221,6 +221,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   setState(() {
                                     currentStatus = value;
                                   });
+
+                                  DeviceUtils.showAlertDialog(
+                                      context,
+                                      "Order status updated\nsuccessfully",
+                                      "Your order status has been updated successfully",
+                                      "Close", () {
+                                    return;
+                                  }, Icons.check, iconSize: 30);
                                 });
                               }
                             });
