@@ -1,8 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 
+import 'package:courier_rider/models/OrderTrackingRequest.dart';
+import 'package:courier_rider/models/StatusUpdate.dart';
+import 'package:courier_rider/screens/order/order_tracking.dart';
+import 'package:courier_rider/services/service.dart';
 import 'package:courier_rider/utils/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -24,18 +31,34 @@ import 'package:courier_rider/utils/utils.dart';
 // keys
 import 'package:courier_rider/config/keys.dart';
 
+// service
+import 'package:courier_rider/services/order_service.dart';
+
+// models
+import 'package:courier_rider/models/models.dart';
+
 class UIMap extends StatefulWidget {
+  final String orderId;
   final double sourceLatitude;
   final double sourceLongitude;
   final double destinationLatitude;
   final double destinationLongitude;
+  final String name;
+  final String address;
+  final String mobileNumber;
+  final String headerTitle;
 
   const UIMap(
       {super.key,
+      required this.orderId,
       required this.sourceLatitude,
       required this.sourceLongitude,
       required this.destinationLatitude,
-      required this.destinationLongitude});
+      required this.destinationLongitude,
+      required this.name,
+      required this.address,
+      required this.mobileNumber,
+      required this.headerTitle});
 
   @override
   State<UIMap> createState() => _UIMapState();
@@ -94,6 +117,10 @@ class _UIMapState extends State<UIMap> {
         });
         updateMarkerAndCircle(currentLocationData!, imageData);
         calculateDistance();
+        /* print(
+            "current lat ${currentLocation.latitude}\ncurrent lng ${currentLocation.longitude}"); */
+        updateDelivery(currentLocation.latitude as double,
+            currentLocation.longitude as double);
       }
     });
   }
@@ -127,6 +154,7 @@ class _UIMapState extends State<UIMap> {
   // generate polylines for map
   Future<void> generatePolyLineFromPoints(
       List<LatLng> polylineCoordinates) async {
+    print("4");
     const id = PolylineId('polyline');
     final polyline = Polyline(
         polylineId: id,
@@ -173,6 +201,43 @@ class _UIMapState extends State<UIMap> {
       setState(() {
         distance = distanceInMeters;
       });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // update delivery
+  void updateDelivery(double lat, double lng) async {
+    try {
+      OrderTrackingRequest payload = OrderTrackingRequest(
+          orderId: widget.orderId, latitude: lat, longitude: lng);
+      await OrderService.updateOrderTracking(payload);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // handle order status update
+  void handleStatusUpdate() async {
+    StatusUpdate payload;
+    if (widget.headerTitle == "Order Tracking") {
+      payload = StatusUpdate(
+          orderId: widget.orderId, statusId: Constants.statusDelivered);
+    } else if (widget.headerTitle == "Drop Location") {
+      payload = StatusUpdate(
+          orderId: widget.orderId, statusId: Constants.statusDelivered);
+    } else {
+      payload = StatusUpdate(
+          orderId: widget.orderId, statusId: Constants.statusOrderPickedUp);
+    }
+
+    try {
+      final response = await OrderService.updateOrderStatus(payload);
+      print('response goes here');
+      if (response == true) {
+        DeviceUtils.showAlertDialog(context, "Status udpated",
+            "Order status has been updated", "Ok", () {}, Icons.check);
+      }
     } catch (e) {
       print(e);
     }
@@ -246,10 +311,82 @@ class _UIMapState extends State<UIMap> {
                 left: Constants.largeSpace * 2,
                 right: Constants.largeSpace * 2,
                 child: UIElevatedButton(
-                    label: "Mark as completed", onPress: () {}),
+                    label: "Mark as completed",
+                    onPress: () {
+                      handleStatusUpdate();
+                    }),
+              ),
+
+              // customer (reciever / sender)
+              Positioned(
+                top: Constants.largeSpace * 4,
+                right: Constants.smallSpace,
+                child: UIFabButton(
+                    child: const UIIcon(
+                      iconData: Icons.person,
+                      iconColor: AppColors.white,
+                    ),
+                    onClick: () {
+                      DeviceUtils.showBottomSheet(
+                          context,
+                          DeviceUtils.getScreenHeight(context) / 2,
+                          SizedBox(
+                            height: double.infinity,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: Constants.mediumSpace,
+                                  horizontal: Constants.smallSpace),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  customerWidget("Customer name", widget.name),
+                                  const UISpacer(
+                                    space: Constants.mediumSpace,
+                                  ),
+                                  customerWidget("Address", widget.address),
+                                  const UISpacer(space: Constants.mediumSpace),
+                                  customerWidget(
+                                      "Phone number",
+                                      AppFormatter.formatPhoneNumber(
+                                          widget.mobileNumber))
+                                ],
+                              ),
+                            ),
+                          ));
+                    }),
               )
             ],
           )
         : const UIProgressIndicator();
+  }
+
+  // field
+  Widget customerWidget(String key, String value) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        UITextView(
+          text: key,
+          textAlign: TextAlign.left,
+          textStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                fontSize: 17,
+              ),
+        ),
+        const UISpacer(
+          space: Constants.smallSpace,
+        ),
+        UITextView(
+          text: value,
+          textStyle: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(fontSize: 15, color: AppColors.primary),
+          textAlign: TextAlign.left,
+        )
+      ],
+    );
   }
 }

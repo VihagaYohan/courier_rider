@@ -180,4 +180,19 @@ class DeviceUtils {
     );
     ;
   }
+
+  static Future<T?> showBottomSheet<T>(
+      BuildContext context, double height, Widget child) {
+    return showModalBottomSheet<T>(
+        context: context,
+        showDragHandle: true,
+        builder: (BuildContext context) {
+          return Container(
+            height: height,
+            color:
+                isDarkmode(context) == true ? AppColors.dark : AppColors.white,
+            child: child,
+          );
+        });
+  }
 }
