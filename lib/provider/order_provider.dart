@@ -110,4 +110,21 @@ class OrderProvider extends ChangeNotifier {
     }
     setLoading(false);
   }
+
+  // search for order item
+  getOrder(String orderId) async {
+    try {
+      setLoading(true);
+      OrderResponse response = await OrderService.findOrder(orderId);
+      if (response.id.isNotEmpty) {
+        onSuccess();
+        currentOrder = response;
+      } else {
+        setError('There are no orders to show');
+      }
+    } catch (e) {
+      setError("Error occured\nPlease try again");
+    }
+    setLoading(false);
+  }
 }
