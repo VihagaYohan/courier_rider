@@ -152,15 +152,18 @@ class _OrderTrackingState extends State<OrderTracking> {
             showAppBar: true,
             appbar: const UIAppBar(title: "Order Tracking"),
             children: UIMap(
-                orderId: widget.orderDetail.id,
-                sourceLatitude:
-                    locationProvider.locationData!.latitude as double,
-                sourceLongitude:
-                    locationProvider.locationData!.longitude as double,
-                destinationLatitude:
-                    widget.orderDetail.receiverDetails.location.coordinates[0],
-                destinationLongitude:
-                    widget.orderDetail.receiverDetails.location.coordinates[1]),
+              orderId: widget.orderDetail.id,
+              sourceLatitude: locationProvider.locationData!.latitude as double,
+              sourceLongitude:
+                  locationProvider.locationData!.longitude as double,
+              destinationLatitude:
+                  widget.orderDetail.receiverDetails.location.coordinates[0],
+              destinationLongitude:
+                  widget.orderDetail.receiverDetails.location.coordinates[1],
+              name: '',
+              address: '',
+              mobileNumber: "",
+            ),
           );
         }
       },
