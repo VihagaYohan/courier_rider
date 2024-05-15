@@ -153,7 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
-                              UITextButton(
+                              // forgot password
+                              /* UITextButton(
                                   onPress: () {},
                                   labelText: "Forgot password ?",
                                   textColor:
@@ -163,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   buttonColor:
                                       DeviceUtils.isDarkmode(context) == true
                                           ? AppColors.dark
-                                          : AppColors.white),
+                                          : AppColors.white), */
                             ],
                           ),
 
