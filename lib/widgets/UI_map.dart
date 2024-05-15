@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:courier_rider/models/OrderTrackingRequest.dart';
+import 'package:courier_rider/screens/order/order_tracking.dart';
 import 'package:courier_rider/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -24,7 +26,14 @@ import 'package:courier_rider/utils/utils.dart';
 // keys
 import 'package:courier_rider/config/keys.dart';
 
+// service
+import 'package:courier_rider/services/order_service.dart';
+
+// models
+import 'package:courier_rider/models/models.dart';
+
 class UIMap extends StatefulWidget {
+  final String orderId;
   final double sourceLatitude;
   final double sourceLongitude;
   final double destinationLatitude;
@@ -32,6 +41,7 @@ class UIMap extends StatefulWidget {
 
   const UIMap(
       {super.key,
+      required this.orderId,
       required this.sourceLatitude,
       required this.sourceLongitude,
       required this.destinationLatitude,
@@ -94,6 +104,10 @@ class _UIMapState extends State<UIMap> {
         });
         updateMarkerAndCircle(currentLocationData!, imageData);
         calculateDistance();
+        /* print(
+            "current lat ${currentLocation.latitude}\ncurrent lng ${currentLocation.longitude}"); */
+        updateDelivery(currentLocation.latitude as double,
+            currentLocation.longitude as double);
       }
     });
   }
@@ -127,6 +141,7 @@ class _UIMapState extends State<UIMap> {
   // generate polylines for map
   Future<void> generatePolyLineFromPoints(
       List<LatLng> polylineCoordinates) async {
+    print("4");
     const id = PolylineId('polyline');
     final polyline = Polyline(
         polylineId: id,
@@ -173,6 +188,17 @@ class _UIMapState extends State<UIMap> {
       setState(() {
         distance = distanceInMeters;
       });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  // update delivery
+  void updateDelivery(double lat, double lng) async {
+    try {
+      OrderTrackingRequest payload = OrderTrackingRequest(
+          orderId: widget.orderId, latitude: lat, longitude: lng);
+      await OrderService.updateOrderTracking(payload);
     } catch (e) {
       print(e);
     }

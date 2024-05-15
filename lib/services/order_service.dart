@@ -103,7 +103,7 @@ class OrderService {
           body: jsonEncode(payload.toJson()));
 
       print('service response');
-      print(response);
+      print(response.statusCode);
     } catch (e) {
       throw Exception("Unable to update order tracking data");
     }

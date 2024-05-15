@@ -297,7 +297,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           space: Constants.mediumSpace,
                         ),
 
-                        // track order
+                        // track order / start delivery button
                         if (widget.orderDetail.status.name ==
                                 Constants.readyForDelivery ||
                             widget.orderDetail.status.name ==
@@ -308,8 +308,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => OrderTracking(
-                                          orderDetail: widget.orderDetail)));
+                                      builder: (context) => OrderLocation(
+                                          orderDetail: widget.orderDetail,
+                                          headerTitle: "Order Tracking")
+                                      /*  builder: (context) => OrderTracking(
+                                          orderDetail: widget.orderDetail) */
+                                      ));
                             },
                             showSuffixIcon: true,
                             suffixIcon: const UIIcon(
