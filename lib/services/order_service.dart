@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:courier_rider/models/OrderTrackingRequest.dart';
+import 'package:courier_rider/models/StatusUpdate.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -107,5 +108,55 @@ class OrderService {
     } catch (e) {
       throw Exception("Unable to update order tracking data");
     }
+  }
+
+  // update order status
+  static updateOrderStatus(StatusUpdate payload) async {
+    try {
+      OrderStatus payloadObj =
+          OrderStatus(status: TempStatus(id: payload.statusId));
+      final token = await Helper.getToken();
+      final response = await http.put(
+          Uri.parse(Endpoints(id: payload.orderId).updateOrderStatus),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'authorization': token
+          },
+          body: jsonEncode(payloadObj.toJson()));
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      throw Exception("Unable to update order status $e");
+    }
+  }
+}
+
+// status update
+class OrderStatus {
+  final TempStatus status;
+
+  OrderStatus({required this.status});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+    };
+  }
+}
+
+// status
+class TempStatus {
+  final String id;
+
+  TempStatus({required this.id});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+    };
   }
 }

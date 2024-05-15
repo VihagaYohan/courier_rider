@@ -163,6 +163,7 @@ class _OrderTrackingState extends State<OrderTracking> {
               name: '',
               address: '',
               mobileNumber: "",
+              headerTitle: "",
             ),
           );
         }

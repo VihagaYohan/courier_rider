@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 
 import 'package:courier_rider/models/OrderTrackingRequest.dart';
+import 'package:courier_rider/models/StatusUpdate.dart';
 import 'package:courier_rider/screens/order/order_tracking.dart';
+import 'package:courier_rider/services/service.dart';
 import 'package:courier_rider/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +46,7 @@ class UIMap extends StatefulWidget {
   final String name;
   final String address;
   final String mobileNumber;
+  final String headerTitle;
 
   const UIMap(
       {super.key,
@@ -53,7 +57,8 @@ class UIMap extends StatefulWidget {
       required this.destinationLongitude,
       required this.name,
       required this.address,
-      required this.mobileNumber});
+      required this.mobileNumber,
+      required this.headerTitle});
 
   @override
   State<UIMap> createState() => _UIMapState();
@@ -212,6 +217,32 @@ class _UIMapState extends State<UIMap> {
     }
   }
 
+  // handle order status update
+  void handleStatusUpdate() async {
+    StatusUpdate payload;
+    if (widget.headerTitle == "Order Tracking") {
+      payload = StatusUpdate(
+          orderId: widget.orderId, statusId: Constants.statusDelivered);
+    } else if (widget.headerTitle == "Drop Location") {
+      payload = StatusUpdate(
+          orderId: widget.orderId, statusId: Constants.statusDelivered);
+    } else {
+      payload = StatusUpdate(
+          orderId: widget.orderId, statusId: Constants.statusOrderPickedUp);
+    }
+
+    try {
+      final response = await OrderService.updateOrderStatus(payload);
+      print('response goes here');
+      if (response == true) {
+        DeviceUtils.showAlertDialog(context, "Status udpated",
+            "Order status has been updated", "Ok", () {}, Icons.check);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLoaded
@@ -280,7 +311,10 @@ class _UIMapState extends State<UIMap> {
                 left: Constants.largeSpace * 2,
                 right: Constants.largeSpace * 2,
                 child: UIElevatedButton(
-                    label: "Mark as completed", onPress: () {}),
+                    label: "Mark as completed",
+                    onPress: () {
+                      handleStatusUpdate();
+                    }),
               ),
 
               // customer (reciever / sender)

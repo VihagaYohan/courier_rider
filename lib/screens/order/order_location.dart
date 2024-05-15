@@ -71,7 +71,8 @@ class _OrderLocationState extends State<OrderLocation> {
                 mobileNumber: widget.headerTitle == "Drop Location" ||
                         widget.headerTitle == "Order Tracking"
                     ? widget.orderDetail.receiverDetails.mobileNumber
-                    : widget.orderDetail.receiverDetails.mobileNumber),
+                    : widget.orderDetail.receiverDetails.mobileNumber,
+                headerTitle: widget.headerTitle),
           );
         }
       },

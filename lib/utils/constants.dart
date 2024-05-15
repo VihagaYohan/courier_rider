@@ -43,6 +43,10 @@ class Constants {
   static const String returnInProcess = "Return in-process";
   static const String refunded = "Refunded";
 
+  // default order status Ids
+  static const String statusOrderPickedUp = "65e33666b6d7601896f4b1cc";
+  static const String statusDelivered = '65e336d4b6d7601896f4b1d4';
+
   // baseURLs
   static const String development_URL = "http://192.168.1.6:8000/api/v1";
   static const String production_URL = "http://192.168.1.6:8000/api/v1";
