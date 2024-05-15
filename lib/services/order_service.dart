@@ -133,6 +133,50 @@ class OrderService {
       throw Exception("Unable to update order status $e");
     }
   }
+
+  // find order by order id
+  static findOrder(String orderId) async {
+    try {
+      //print(orderId);
+      //print(Endpoints(id: orderId).getOrderById);
+      final token = await Helper.getToken();
+      final response = await http.get(
+        Uri.parse(Endpoints(id: orderId).getOrderById),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'authorization': token
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        var item = jsonData['data'];
+
+        print(item);
+        final orderItem = OrderResponse(
+            id: item['_id'],
+            trackingId: item['trackingId'],
+            status: Status.fromJson(item['status']),
+            courierType: CourierType.fromJson(item['courierType']),
+            packageType: PackageType.fromJson(item['packageType']),
+            packageSize: item['packageSize'],
+            senderDetails:
+                SenderDetailsResponse.fromJson(item['senderDetails']),
+            receiverDetails:
+                ReceiverDetailsResponse.fromJson(item['receiverDetails']),
+            orderTotal: item['orderTotal'].toDouble(),
+            paymentType: PaymentTypes.fromJson(item['paymentType']),
+            createdOn: item['createdOn'],
+            rider: Rider.fromJson(item['rider']));
+        return orderItem;
+      } else {
+        throw Exception("Failed to locate order for given orderId");
+      }
+    } catch (e) {
+      print(e);
+      throw Exception("Unable to locate order");
+    }
+  }
 }
 
 // status update

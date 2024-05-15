@@ -59,10 +59,10 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
               label: "Profile")
         ],
       ),
-      body: const [
+      body: [
         HomeScreen(),
-        OrderListScreen(),
-        ProfileScreen()
+        const OrderListScreen(),
+        const ProfileScreen()
       ][currentPageIndex],
     );
   }

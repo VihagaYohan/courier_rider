@@ -9,8 +9,18 @@ import 'package:courier_rider/widgets/widgets.dart';
 // utils
 import 'package:courier_rider/utils/utils.dart';
 
+// service
+import 'package:courier_rider/services/order_service.dart';
+
+// model
+import 'package:courier_rider/models/models.dart';
+
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final TextEditingController trackingNumberController =
+      TextEditingController();
+  double id = 0;
+
+  HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -37,9 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget trackCard(BuildContext context) {
-    final TextEditingController trackingNumberController =
-        TextEditingController();
-
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: Constants.largeSpace),
@@ -94,6 +101,13 @@ class _HomeScreenState extends State<HomeScreen> {
           labelText: 'Tracking number',
           keyboardType: TextInputType.number,
           borderColor: AppColors.primary,
+          validator: (value) {
+            print(value);
+            /*  if (value == null || value.isEmpty) {
+              return "Please enter your name";
+            }
+            return null; */
+          },
         )),
         Container(
           width: 50,
@@ -104,8 +118,19 @@ class _HomeScreenState extends State<HomeScreen> {
               color: AppColors.primary),
           child: IconButton(
               color: AppColors.white,
-              onPressed: () {
-                print('hello');
+              onPressed: () async {
+                // handleSearch();
+                OrderResponse response =
+                    await OrderService.findOrder(trackingNumberController.text);
+                DeviceUtils.showAlertDialog(
+                    context, "Found", "Courier order has found", "Ok", () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OrderDetailsScreen(
+                                orderDetail: response,
+                              )));
+                }, Icons.check);
               },
               icon: const UIIcon(
                 iconData: Icons.search,
